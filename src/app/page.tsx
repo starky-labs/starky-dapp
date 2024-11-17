@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useReadContract, useAccount } from "@starknet-react/core";
+import { useReadContract, useAccount, useSendTransaction, useContract } from "@starknet-react/core";
 import game_abi from "../contracts/game_abi.json";
+import * as ethContract from "@/contracts/eth";
 import dynamic from "next/dynamic";
 
 const WalletBar = dynamic(() => import("../components/WalletBar"), {
@@ -28,10 +29,33 @@ export default function Home() {
   const [betStatus, setBetStatus] = useState(null);
   const { address: userAddress } = useAccount();
 
+  const gameContractAddress = "0x001058b0fd2e63557dc7ee60dce5f45febb49f59518f330688a321e95b6b2e46";
+
   console.log({ userAddress });
+
+  // contracts
+  const { contract: ethContractInstance } = useContract({
+    ...ethContract,
+  });
+  const { sendAsync: sendTransferEthTransaction } = useSendTransaction({});
+  const { contract: gameContractInstance } = useContract({
+    address: gameContractAddress,
+    abi: game_abi,
+  });
 
   const play = async () => {
     try {
+      await sendTransferEthTransaction([
+        ethContractInstance.populate("approve", [
+          gameContractAddress,
+          5 * 10 ** 18
+        ]),
+        gameContractInstance.populate("place_bet", [
+          1.7 * 10 ** 18
+        ]),
+      ]);
+
+
       const response = await fetch("/api/play", {
         method: "POST",
         headers: {
@@ -59,16 +83,14 @@ export default function Home() {
     isLoading: prizePoolIsLoading,
     error: prizePoolError,
   } = useReadContract({
-    address:
-      "0x001058b0fd2e63557dc7ee60dce5f45febb49f59518f330688a321e95b6b2e46",
+    address:gameContractAddress,
     abi: game_abi,
     functionName: "get_prize_pool",
   });
 
   // Read user points
   const { data: points, isLoading: pointsIsLoading } = useReadContract({
-    address:
-      "0x001058b0fd2e63557dc7ee60dce5f45febb49f59518f330688a321e95b6b2e46",
+    address: gameContractAddress,
     abi: game_abi,
     functionName: "get_user_points",
     args: [userAddress],
