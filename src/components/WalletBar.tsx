@@ -13,7 +13,9 @@ function WalletConnected() {
 
   return (
     <div>
-      <span>Connected: {shortenedAddress}</span>
+      <div>
+        <span>Connected: {shortenedAddress}</span>
+      </div>
       <button
         className="bg-yellow-300 border border-black hover:bg-yellow-500 text-black font-regular py-2 px-4 rounded transition-all"
         onClick={() => disconnect()}

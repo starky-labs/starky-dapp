@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useReadContract, useAccount, useSendTransaction, useContract } from "@starknet-react/core";
+import {
+  useReadContract,
+  useAccount,
+  useSendTransaction,
+  useContract,
+} from "@starknet-react/core";
 import game_abi from "../contracts/game_abi.json";
 import * as ethContract from "@/contracts/eth";
 import dynamic from "next/dynamic";
@@ -29,14 +34,15 @@ export default function Home() {
   const [betStatus, setBetStatus] = useState(null);
   const { address: userAddress } = useAccount();
 
-  const gameContractAddress = "0x001058b0fd2e63557dc7ee60dce5f45febb49f59518f330688a321e95b6b2e46";
-
-  console.log({ userAddress });
+  const gameContractAddress =
+    "0x001058b0fd2e63557dc7ee60dce5f45febb49f59518f330688a321e95b6b2e46";
 
   // contracts
   const { contract: ethContractInstance } = useContract({
     ...ethContract,
   });
+
+  // Place bet
   const { sendAsync: sendTransferEthTransaction } = useSendTransaction({});
   const { contract: gameContractInstance } = useContract({
     address: gameContractAddress,
@@ -48,13 +54,12 @@ export default function Home() {
       await sendTransferEthTransaction([
         ethContractInstance.populate("approve", [
           gameContractAddress,
-          5 * 10 ** 18
+          // this is  0.006839571022106 ETH
+          6.839571022106 * 10 ** 15,
         ]),
-        gameContractInstance.populate("place_bet", [
-          1.7 * 10 ** 18
-        ]),
+        // half a dollar (0.5 USD) would be approximately 0.0001643485 ETH - converting to wei = 1.643485 * 10 ** 14
+        gameContractInstance.populate("place_bet", [1.643485 * 10 ** 14]),
       ]);
-
 
       const response = await fetch("/api/play", {
         method: "POST",
@@ -81,9 +86,8 @@ export default function Home() {
   const {
     data: prizePool,
     isLoading: prizePoolIsLoading,
-    error: prizePoolError,
   } = useReadContract({
-    address:gameContractAddress,
+    address: gameContractAddress,
     abi: game_abi,
     functionName: "get_prize_pool",
   });
@@ -96,26 +100,27 @@ export default function Home() {
     args: [userAddress],
   });
 
-  console.log({
-    prizePool: displayPrizePool(Number(decodeU256(prizePool))),
-    prizePoolIsLoading,
-    prizePoolError,
-    points,
-  });
-
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <div className="flex flex-row mb-4">
         <WalletBar />
       </div>
-      <button
-        onClick={play}
-        className="border-2 border-blue-500 bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 active:bg-blue-700 transition-all"
-      >
-        Play
-      </button>
-      <div>Prize pool: {prizePoolIsLoading ? "Loading..." : prizePool} </div>
-      <div>Points: {pointsIsLoading ? "Loading..." : points}</div>
+      {userAddress ? (
+        <>
+          <button
+            onClick={play}
+            className="border-2 border-blue-500 bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 active:bg-blue-700 transition-all"
+          >
+            Play
+          </button>
+          <div>
+            Prize pool: {prizePoolIsLoading ? "Loading..." : prizePool}{" "}
+          </div>
+          <div>Points: {pointsIsLoading ? "Loading..." : points}</div>
+        </>
+      ) : (
+        <div>Please select a wallet and connect</div>
+      )}
     </div>
   );
 }
