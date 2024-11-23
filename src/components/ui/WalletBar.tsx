@@ -28,6 +28,7 @@ function WalletConnected() {
 
 function ConnectWallet() {
   const { connectors, connect } = useConnect();
+  const cartridgeConnector = connectors[0];
 
   return (
     <div>
@@ -38,7 +39,7 @@ function ConnectWallet() {
         return (
           <button
             key={connector.id}
-            onClick={() => connect({ connector })}
+            onClick={() => connect({ connector: cartridgeConnector })}
             className="bg-blue-500 text-white font-medium py-2 px-4 rounded hover:bg-blue-600 active:bg-blue-700 transition-all"
           >
             {connector.id}

@@ -10,32 +10,15 @@ import {
 import game_abi from "../contracts/game_abi.json";
 import * as ethContract from "@/contracts/eth";
 import dynamic from "next/dynamic";
+import { GAME_CONTRACT } from "./constants";
 
-const WalletBar = dynamic(() => import("../components/WalletBar"), {
+const WalletBar = dynamic(() => import("../components/ui/WalletBar"), {
   ssr: false,
 });
-
-function decodeU256(u256: { low: number; high: number }) {
-  if (!u256 || !u256.low || !u256.high) return 0;
-  const low = BigInt(u256.low);
-  const high = BigInt(u256.high);
-  return (high << 128n) + low;
-}
-
-function displayPrizePool(weiValue: number) {
-  const etherValue = weiValue / 1e18;
-  if (etherValue < 0.000001) {
-    return `${weiValue} wei`; // Display in wei for very small values
-  }
-  return `${etherValue.toFixed(18)} ETH`; // Display in Ether for larger values
-}
 
 export default function Home() {
   const [betStatus, setBetStatus] = useState(null);
   const { address: userAddress } = useAccount();
-
-  const gameContractAddress =
-    "0x001058b0fd2e63557dc7ee60dce5f45febb49f59518f330688a321e95b6b2e46";
 
   // contracts
   const { contract: ethContractInstance } = useContract({
@@ -45,7 +28,7 @@ export default function Home() {
   // Place bet
   const { sendAsync: sendTransferEthTransaction } = useSendTransaction({});
   const { contract: gameContractInstance } = useContract({
-    address: gameContractAddress,
+    address: GAME_CONTRACT,
     abi: game_abi,
   });
 
@@ -53,12 +36,15 @@ export default function Home() {
     try {
       await sendTransferEthTransaction([
         ethContractInstance.populate("approve", [
-          gameContractAddress,
+          userAddress,
           // this is  0.006839571022106 ETH
           6.839571022106 * 10 ** 15,
         ]),
         // half a dollar (0.5 USD) would be approximately 0.0001643485 ETH - converting to wei = 1.643485 * 10 ** 14
-        gameContractInstance.populate("place_bet", [1.643485 * 10 ** 14]),
+        gameContractInstance.populate("place_bet", [
+          userAddress,
+          1.643485 * 10 ** 14,
+        ]),
       ]);
 
       const response = await fetch("/api/play", {
@@ -83,18 +69,15 @@ export default function Home() {
   };
 
   // Read prize pool
-  const {
-    data: prizePool,
-    isLoading: prizePoolIsLoading,
-  } = useReadContract({
-    address: gameContractAddress,
+  const { data: prizePool, isLoading: prizePoolIsLoading } = useReadContract({
+    address: GAME_CONTRACT,
     abi: game_abi,
     functionName: "get_prize_pool",
   });
 
   // Read user points
   const { data: points, isLoading: pointsIsLoading } = useReadContract({
-    address: gameContractAddress,
+    address: GAME_CONTRACT,
     abi: game_abi,
     functionName: "get_user_points",
     args: [userAddress],
