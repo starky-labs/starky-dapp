@@ -6,9 +6,11 @@ import {
   useAccount,
   useSendTransaction,
   useContract,
+  useNetwork
 } from "@starknet-react/core";
 import game_abi from "../contracts/game_abi.json";
 import * as ethContract from "@/contracts/eth";
+import * as gameContract from "@/contracts/game";
 import dynamic from "next/dynamic";
 import { GAME_CONTRACT } from "./constants";
 
@@ -19,17 +21,19 @@ const WalletBar = dynamic(() => import("../components/ui/WalletBar"), {
 export default function Home() {
   const [betStatus, setBetStatus] = useState(null);
   const { address: userAddress } = useAccount();
+  const { chain } = useNetwork();
 
   // contracts
   const { contract: ethContractInstance } = useContract({
-    ...ethContract,
+    abi: ethContract.abi,
+    address: ethContract.address
   });
 
   // Place bet
   const { sendAsync: sendTransferEthTransaction } = useSendTransaction({});
   const { contract: gameContractInstance } = useContract({
-    address: GAME_CONTRACT,
-    abi: game_abi,
+    abi:gameContract.abi,
+    address:gameContract.gameAddress
   });
 
   const play = async () => {
@@ -42,7 +46,6 @@ export default function Home() {
         ]),
         // half a dollar (0.5 USD) would be approximately 0.0001643485 ETH - converting to wei = 1.643485 * 10 ** 14
         gameContractInstance.populate("place_bet", [
-          userAddress,
           1.643485 * 10 ** 14,
         ]),
       ]);
@@ -68,12 +71,15 @@ export default function Home() {
     }
   };
 
+  
   // Read prize pool
   const { data: prizePool, isLoading: prizePoolIsLoading } = useReadContract({
-    address: GAME_CONTRACT,
-    abi: game_abi,
+    address: chain.nativeCurrency.address,
+    abi: gameContractInstance.abi,
     functionName: "get_prize_pool",
   });
+
+  console.log("prizePool", prizePool)
 
   // Read user points
   const { data: points, isLoading: pointsIsLoading } = useReadContract({
