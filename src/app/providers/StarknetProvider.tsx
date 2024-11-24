@@ -22,7 +22,7 @@ function provider(chain: Chain) {
   }
 }
 
-const cartridge = new ControllerConnector({
+const connector = new ControllerConnector({
   policies: [
     {
       target: ETH_ERC20_CONTRACT,
@@ -42,7 +42,7 @@ export function StarknetProvider({ children }: PropsWithChildren) {
     <StarknetConfig
       autoConnect
       chains={[mainnet, sepolia]}
-      connectors={[cartridge as never as Connector]}
+      connectors={[connector as never as Connector]}
       explorer={voyager}
       provider={provider}
     >

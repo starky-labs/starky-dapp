@@ -6,7 +6,7 @@ import {
   useAccount,
   useSendTransaction,
   useContract,
-  useNetwork
+  useNetwork,
 } from "@starknet-react/core";
 import game_abi from "../contracts/game_abi.json";
 import * as ethContract from "@/contracts/eth";
@@ -26,14 +26,14 @@ export default function Home() {
   // contracts
   const { contract: ethContractInstance } = useContract({
     abi: ethContract.abi,
-    address: ethContract.address
+    address: ethContract.address,
   });
 
   // Place bet
   const { sendAsync: sendTransferEthTransaction } = useSendTransaction({});
   const { contract: gameContractInstance } = useContract({
-    abi:gameContract.abi,
-    address:gameContract.gameAddress
+    abi: gameContract.abi,
+    address: gameContract.gameAddress,
   });
 
   const play = async () => {
@@ -41,13 +41,10 @@ export default function Home() {
       await sendTransferEthTransaction([
         ethContractInstance.populate("approve", [
           userAddress,
-          // this is  0.006839571022106 ETH
-          6.839571022106 * 10 ** 15,
+          0.00002 * 10 ** 18,
         ]),
         // half a dollar (0.5 USD) would be approximately 0.0001643485 ETH - converting to wei = 1.643485 * 10 ** 14
-        gameContractInstance.populate("place_bet", [
-          1.643485 * 10 ** 14,
-        ]),
+        gameContractInstance.populate("place_bet", [0.000002 * 10 ** 18]),
       ]);
 
       const response = await fetch("/api/play", {
@@ -71,7 +68,6 @@ export default function Home() {
     }
   };
 
-  
   // Read prize pool
   const { data: prizePool, isLoading: prizePoolIsLoading } = useReadContract({
     address: chain.nativeCurrency.address,
@@ -79,7 +75,7 @@ export default function Home() {
     functionName: "get_prize_pool",
   });
 
-  console.log("prizePool", prizePool)
+  console.log("prizePool", prizePool);
 
   // Read user points
   const { data: points, isLoading: pointsIsLoading } = useReadContract({
