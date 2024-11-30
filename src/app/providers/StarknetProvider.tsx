@@ -8,6 +8,8 @@ import ControllerConnector from "@cartridge/connector/controller";
 import { RpcProvider } from 'starknet';
 import { ETH_ERC20_CONTRACT, GAME_CONTRACT,  } from "@/app/constants";
 
+const InfuraRPC = `https://starknet-sepolia.infura.io/v3/${process.env.INFURA_API_KEY}`
+
 function provider(chain: Chain) {
   switch (chain) {
     case mainnet:
