@@ -1,5 +1,5 @@
 export const gameAddress =
-  "0x6c2c7dceeeb27c00df8472994eec5c88e35aba3b641b941b8fd9dfdda2bc6e2";
+  "0x02c27b6caba176944a66319d051535b42e75df95179b3a6c9347533d04370088";
 
 export const abi = [
   {
@@ -76,22 +76,6 @@ export const abi = [
         outputs: [],
         state_mutability: "external",
       },
-      {
-        name: "get_remaining_allowance",
-        type: "function",
-        inputs: [
-          {
-            name: "user",
-            type: "core::starknet::contract_address::ContractAddress",
-          },
-        ],
-        outputs: [
-          {
-            type: "core::integer::u256",
-          },
-        ],
-        state_mutability: "view",
-      },
     ],
   },
   {
@@ -128,28 +112,6 @@ export const abi = [
         name: "points_earned",
         type: "core::integer::u256",
       },
-      {
-        kind: "data",
-        name: "remaining_allowance",
-        type: "core::integer::u256",
-      },
-    ],
-  },
-  {
-    kind: "struct",
-    name: "betting_game::betting_game::BettingContract::BettingApproved",
-    type: "event",
-    members: [
-      {
-        kind: "data",
-        name: "user",
-        type: "core::starknet::contract_address::ContractAddress",
-      },
-      {
-        kind: "data",
-        name: "amount",
-        type: "core::integer::u256",
-      },
     ],
   },
   {
@@ -183,11 +145,6 @@ export const abi = [
         kind: "nested",
         name: "BetPlaced",
         type: "betting_game::betting_game::BettingContract::BetPlaced",
-      },
-      {
-        kind: "nested",
-        name: "BettingApproved",
-        type: "betting_game::betting_game::BettingContract::BettingApproved",
       },
       {
         kind: "nested",

@@ -72,22 +72,6 @@
         ],
         "outputs": [],
         "state_mutability": "external"
-      },
-      {
-        "name": "get_remaining_allowance",
-        "type": "function",
-        "inputs": [
-          {
-            "name": "user",
-            "type": "core::starknet::contract_address::ContractAddress"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::integer::u256"
-          }
-        ],
-        "state_mutability": "view"
       }
     ]
   },
@@ -124,28 +108,6 @@
         "kind": "data",
         "name": "points_earned",
         "type": "core::integer::u256"
-      },
-      {
-        "kind": "data",
-        "name": "remaining_allowance",
-        "type": "core::integer::u256"
-      }
-    ]
-  },
-  {
-    "kind": "struct",
-    "name": "betting_game::betting_game::BettingContract::BettingApproved",
-    "type": "event",
-    "members": [
-      {
-        "kind": "data",
-        "name": "user",
-        "type": "core::starknet::contract_address::ContractAddress"
-      },
-      {
-        "kind": "data",
-        "name": "amount",
-        "type": "core::integer::u256"
       }
     ]
   },
@@ -180,11 +142,6 @@
         "kind": "nested",
         "name": "BetPlaced",
         "type": "betting_game::betting_game::BettingContract::BetPlaced"
-      },
-      {
-        "kind": "nested",
-        "name": "BettingApproved",
-        "type": "betting_game::betting_game::BettingContract::BettingApproved"
       },
       {
         "kind": "nested",

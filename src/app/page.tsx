@@ -44,6 +44,7 @@ export default function Home() {
           0.00002 * 10 ** 18,
         ]),
         // half a dollar (0.5 USD) would be approximately 0.0001643485 ETH - converting to wei = 1.643485 * 10 ** 14
+        // should pass this to test on starkscan 164348500000000000
         gameContractInstance.populate("place_bet", [0.000002 * 10 ** 18]),
       ]);
 
@@ -69,13 +70,19 @@ export default function Home() {
   };
 
   // Read prize pool
-  const { data: prizePool, isLoading: prizePoolIsLoading } = useReadContract({
+  /* const { data: prizePool, isLoading: prizePoolIsLoading } = useReadContract({
     address: chain.nativeCurrency.address,
     abi: gameContractInstance.abi,
     functionName: "get_prize_pool",
-  });
+  }); */
 
-  console.log("prizePool", prizePool);
+  // Read prize pool
+  const { data: prizePool, isLoading: prizePoolIsLoading } = useReadContract({
+    address: ethContractInstance.address,
+    abi: ethContractInstance.abi,
+    functionName: "balance_of",
+    args: [GAME_CONTRACT],
+  });
 
   // Read user points
   const { data: points, isLoading: pointsIsLoading } = useReadContract({
@@ -99,7 +106,8 @@ export default function Home() {
             Play
           </button>
           <div>
-            Prize pool: {prizePoolIsLoading ? "Loading..." : prizePool}{" "}
+            Prize pool:
+            {prizePoolIsLoading ? "Loading..." : prizePool}
           </div>
           <div>Points: {pointsIsLoading ? "Loading..." : points}</div>
         </>
