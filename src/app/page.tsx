@@ -21,7 +21,6 @@ const WalletBar = dynamic(() => import("../components/ui/WalletBar"), {
 export default function Home() {
   const [betStatus, setBetStatus] = useState(null);
   const { address: userAddress } = useAccount();
-  const { chain } = useNetwork();
 
   // contracts
   const { contract: ethContractInstance } = useContract({
@@ -40,7 +39,7 @@ export default function Home() {
     try {
       await sendTransferEthTransaction([
         ethContractInstance.populate("approve", [
-          userAddress,
+          gameContractInstance.address,
           0.00002 * 10 ** 18,
         ]),
         // half a dollar (0.5 USD) would be approximately 0.0001643485 ETH - converting to wei = 1.643485 * 10 ** 14
@@ -70,13 +69,6 @@ export default function Home() {
   };
 
   // Read prize pool
-  /* const { data: prizePool, isLoading: prizePoolIsLoading } = useReadContract({
-    address: chain.nativeCurrency.address,
-    abi: gameContractInstance.abi,
-    functionName: "get_prize_pool",
-  }); */
-
-  // Read prize pool
   const { data: prizePool, isLoading: prizePoolIsLoading } = useReadContract({
     address: ethContractInstance.address,
     abi: ethContractInstance.abi,
@@ -91,6 +83,9 @@ export default function Home() {
     functionName: "get_user_points",
     args: [userAddress],
   });
+
+  const convertWeiToEth = (wei) => (wei ? Number(wei) / 10 ** 18 : null);
+  const convertedPrizePool = convertWeiToEth(prizePool);
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -107,7 +102,9 @@ export default function Home() {
           </button>
           <div>
             Prize pool:
-            {prizePoolIsLoading ? "Loading..." : prizePool}
+            {prizePoolIsLoading
+              ? "Loading..."
+              : `${convertedPrizePool || 0} ETH`}
           </div>
           <div>Points: {pointsIsLoading ? "Loading..." : points}</div>
         </>
