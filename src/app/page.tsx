@@ -6,7 +6,6 @@ import {
   useAccount,
   useSendTransaction,
   useContract,
-  useNetwork,
 } from "@starknet-react/core";
 import game_abi from "../contracts/game_abi.json";
 import * as ethContract from "@/contracts/eth";
@@ -33,6 +32,24 @@ export default function Home() {
   const { contract: gameContractInstance } = useContract({
     abi: gameContract.abi,
     address: gameContract.gameAddress,
+  });
+
+  // Read prize pool
+  const { data: prizePool, isLoading: prizePoolIsLoading } = useReadContract({
+    address: ethContractInstance.address,
+    abi: ethContractInstance.abi,
+    functionName: "balance_of",
+    args: [GAME_CONTRACT],
+    watch: true,
+  });
+
+  // Read user points
+  const { data: points, isLoading: pointsIsLoading } = useReadContract({
+    address: GAME_CONTRACT,
+    abi: game_abi,
+    functionName: "get_user_points",
+    args: [userAddress],
+    watch: true,
   });
 
   const play = async () => {
@@ -67,22 +84,6 @@ export default function Home() {
       console.error("Error sending data:", error);
     }
   };
-
-  // Read prize pool
-  const { data: prizePool, isLoading: prizePoolIsLoading } = useReadContract({
-    address: ethContractInstance.address,
-    abi: ethContractInstance.abi,
-    functionName: "balance_of",
-    args: [GAME_CONTRACT],
-  });
-
-  // Read user points
-  const { data: points, isLoading: pointsIsLoading } = useReadContract({
-    address: GAME_CONTRACT,
-    abi: game_abi,
-    functionName: "get_user_points",
-    args: [userAddress],
-  });
 
   const convertWeiToEth = (wei) => (wei ? Number(wei) / 10 ** 18 : null);
   const convertedPrizePool = convertWeiToEth(prizePool);
