@@ -27,15 +27,19 @@ export default function Home() {
     address: ethContract.address,
   });
 
-  // Place bet
-  const { sendAsync: sendTransferEthTransaction } = useSendTransaction({});
   const { contract: gameContractInstance } = useContract({
     abi: gameContract.abi,
     address: gameContract.gameAddress,
   });
 
+  const { sendAsync: sendTransferEthTransaction } = useSendTransaction({});
+
   // Read prize pool
-  const { data: prizePool, isLoading: prizePoolIsLoading } = useReadContract({
+  const {
+    data: prizePool,
+    refetch: refectchPrizePool,
+    isLoading: prizePoolIsLoading,
+  } = useReadContract({
     address: ethContractInstance.address,
     abi: ethContractInstance.abi,
     functionName: "balance_of",
@@ -44,7 +48,11 @@ export default function Home() {
   });
 
   // Read user points
-  const { data: points, isLoading: pointsIsLoading } = useReadContract({
+  const {
+    data: points,
+    refetch: refectchPoints,
+    isLoading: pointsIsLoading,
+  } = useReadContract({
     address: GAME_CONTRACT,
     abi: game_abi,
     functionName: "get_user_points",
@@ -52,6 +60,7 @@ export default function Home() {
     watch: true,
   });
 
+  // Place bet
   const play = async () => {
     try {
       await sendTransferEthTransaction([
@@ -80,6 +89,9 @@ export default function Home() {
       const data = text ? JSON.parse(text) : null;
       console.log("Response data:", data);
       setBetStatus(data);
+
+      refectchPrizePool();
+      refectchPoints();
     } catch (error) {
       console.error("Error sending data:", error);
     }
