@@ -18,7 +18,6 @@ const WalletBar = dynamic(() => import("../components/ui/WalletBar"), {
 });
 
 export default function Home() {
-  const [betStatus, setBetStatus] = useState(null);
   const { address: userAddress } = useAccount();
 
   // contracts
@@ -29,7 +28,7 @@ export default function Home() {
 
   const { contract: gameContractInstance } = useContract({
     abi: gameContract.abi,
-    address: gameContract.gameAddress,
+    address: gameContract.address,
   });
 
   const { sendAsync: sendTransferEthTransaction } = useSendTransaction({});
@@ -72,23 +71,6 @@ export default function Home() {
         // should pass this to test on starkscan 164348500000000000
         gameContractInstance.populate("place_bet", [0.000002 * 10 ** 18]),
       ]);
-
-      const response = await fetch("/api/play", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: "John Doe", action: "Hello!" }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const text = await response.text();
-      const data = text ? JSON.parse(text) : null;
-      console.log("Response data:", data);
-      setBetStatus(data);
 
       refectchPrizePool();
       refectchPoints();
