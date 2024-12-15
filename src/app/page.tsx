@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   useReadContract,
   useAccount,
@@ -19,6 +18,12 @@ const WalletBar = dynamic(() => import("../components/ui/WalletBar"), {
 
 export default function Home() {
   const { address: userAddress } = useAccount();
+
+  // Approve amount (0.1 ETH in wei)
+  const APPROVE_AMOUNT = "100000000000000000"; // Exact 0.1 ETH in wei
+
+  // Bet amount (roughly $0.50 in ETH)
+  const BET_AMOUNT = "200000000000000"; // Approximately 0.0002 ETH in wei
 
   // contracts
   const { contract: ethContractInstance } = useContract({
@@ -62,22 +67,29 @@ export default function Home() {
   // Place bet
   const play = async () => {
     try {
-      await sendTransferEthTransaction([
-        ethContractInstance.populate("approve", [
-          gameContractInstance.address,
-          0.00002 * 10 ** 18,
-        ]),
-        // half a dollar (0.5 USD) would be approximately 0.0001643485 ETH - converting to wei = 1.643485 * 10 ** 14
-        // should pass this to test on starkscan 164348500000000000
-        gameContractInstance.populate("place_bet", [0.000002 * 10 ** 18]),
+      // Approve transaction
+      const approveCall = ethContractInstance.populate("approve", [
+        gameContractInstance.address,
+        APPROVE_AMOUNT,
       ]);
 
+      // Place bet transaction
+      const placeBetCall = gameContractInstance.populate("place_bet", [
+        BET_AMOUNT,
+      ]);
+
+      // Send transactions
+      await sendTransferEthTransaction([approveCall, placeBetCall]);
+
+      // Refetch data
       refectchPrizePool();
       refectchPoints();
     } catch (error) {
       console.error("Error sending data:", error);
     }
   };
+
+  console.log({ prizePool, points });
 
   const convertWeiToEth = (wei) => (wei ? Number(wei) / 10 ** 18 : null);
   const convertedPrizePool = convertWeiToEth(prizePool);

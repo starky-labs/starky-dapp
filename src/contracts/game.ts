@@ -1,5 +1,5 @@
 export const address =
-  "0x02c27b6caba176944a66319d051535b42e75df95179b3a6c9347533d04370088";
+  "0x0767d132639c5c59b1a613960967fdbe6de3f00b898d6b778f47687ac8662f2c";
 
 export const abi = [
   {
@@ -72,6 +72,10 @@ export const abi = [
             name: "user",
             type: "core::starknet::contract_address::ContractAddress",
           },
+          {
+            name: "tx_hash",
+            type: "core::felt252",
+          },
         ],
         outputs: [],
         state_mutability: "external",
@@ -133,6 +137,11 @@ export const abi = [
         kind: "data",
         name: "timestamp",
         type: "core::integer::u64",
+      },
+      {
+        kind: "data",
+        name: "tx_hash",
+        type: "core::felt252",
       },
     ],
   },
