@@ -1,87 +1,83 @@
-import { RpcProvider } from "starknet";
+import { hash, num } from "starknet";
 import { loadState, saveState } from "./state-manager.js";
-import pLimit from "p-limit";
+import { address } from "../../contracts/game.js";
+import { isWinnerBet, transferPrize } from "../game-engine/index.js";
+import { provider } from "../utils.js";
 
-const limit = pLimit(2);
+let state = await loadState({
+  fallbackLastCheckedBlock: (await provider.getBlockNumber()) - 10,
+}); // maybe add the ability to provide configs, like path to state file
 
-const provider = new RpcProvider({
-  nodeUrl:
-    "https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/7SLc9bbjB60QiSGjhRjhgiDDjs1NJX3A",
-});
+async function checkForEvents(fromBlock, toBlock, eventName) {
+  const eventKey = hash.starknetKeccak(eventName);
 
-export const contractAddress =
-  "0x2c27b6caba176944a66319d051535b42e75df95179b3a6c9347533d04370088";
-
-
-let state = await loadState({ fallbackLastCheckedBlock: await provider.getBlockNumber()-10 }); // maybe add the ability to provide configs, like path to state file
-
-// Looking for transactions on GAME contract
-async function checkIfItIsAGameTransaction(tx) {
   try {
-    const txInfo = await provider.getTransaction(tx);
+    const allEvents = [];
+    let continuationToken = undefined;
 
-    if (
-      txInfo.type === "INVOKE" &&
-      txInfo.calldata.some((item) => item === contractAddress)
-    ) {
-      console.log(
-        "Contract address found in calldata, and user address should be:",
-        txInfo.calldata[1]
-      );
+    do {
+      const response = await provider.getEvents({
+        from_block: { block_number: fromBlock },
+        to_block: { block_number: toBlock },
+        address: address,
+        keys: [[num.toHex(eventKey)]],
+        chunk_size: 50,
+        continuation_token: continuationToken,
+      });
 
-      return { userAddress: txInfo.calldata[1] };
-    }
+      allEvents.push(...response.events);
+      continuationToken = response.continuation_token;
+    } while (continuationToken);
 
-    //console.log("Transaction does not involve the target contract.");
-    return null;
+    return allEvents;
   } catch (error) {
-    console.error(`Error processing transaction ${tx}:`, error);
-    return null;
+    console.error("Error getting events:", error);
+    return [];
   }
 }
 
-async function monitorContractTransactions() {
-    let { lastCheckedBlock } = state;
+async function monitorBetPlacedTransactions() {
+  let { lastCheckedBlock } = state;
 
-    console.log("Last checked block:", lastCheckedBlock);
+  console.log("Last checked block:", lastCheckedBlock);
 
-    const currentBlock = await provider.getBlockNumber();
-    console.log("Current block:", currentBlock);
+  const currentBlock = await provider.getBlockNumber();
+  console.log("Current block:", currentBlock);
 
-    // Loop through new blocks
-    const blocksToFetch = [];
-    for (let blockNumber = lastCheckedBlock + 1; blockNumber <= currentBlock; blockNumber++) {
-        blocksToFetch.push(limit(() => provider.getBlock(blockNumber)));
+  if (lastCheckedBlock >= currentBlock) {
+    console.log("No new blocks to process.");
+    return;
+  }
 
-        console.log("Fetching block:", blockNumber);
-    }
+  const events = await checkForEvents(
+    lastCheckedBlock,
+    currentBlock,
+    "BetPlaced"
+  );
 
-    console.log("Fetching blocks:", blocksToFetch);
-    // process.exit(0);
-    await Promise.all(blocksToFetch).then((blocks) => {
-        blocks.forEach((block) => {
-            block.transactions.forEach(async (tx) => {
-              const playerAddress = await checkIfItIsAGameTransaction(tx);
-
-              if (!playerAddress) { // not a game transaction
-                  return; 
-              }
-
-              console.log("Player address found:", playerAddress);
-            });
-        });
+  console.log("All events:", events);
+  if (events.length > 0) {
+    events.forEach(async (event) => {
+      if (isWinnerBet()) {
+        const userAddress = event.data[0];
+        const transactionHash = event.transaction_hash;
+        console.log("Winner bet found:");
+        await transferPrize(userAddress);
+      }
     });
+  }
 
-    // Update latest checked block and persist state
-    lastCheckedBlock = currentBlock;
-    state = { lastCheckedBlock };
-
-    await saveState(state);
-    setTimeout(run, 1000);
+  // Update latest checked block and persist state
+  state.lastCheckedBlock = currentBlock;
+  await saveState(state);
 }
 
 function run() {
-  monitorContractTransactions().catch(console.error);
+  monitorBetPlacedTransactions()
+    .catch(console.error)
+    .finally(() => {
+      setTimeout(run, 5000);
+    });
 }
 
 run();
