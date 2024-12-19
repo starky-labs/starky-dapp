@@ -25,9 +25,6 @@ export default function Home() {
   const [remainingApproval, setRemainingApproval] = useState<string>("0");
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
-  const APPROVE_AMOUNT = "100000000000000000"; // Exact 0.1 ETH in wei
-  const BET_AMOUNT = "200000000000000"; // Approximately 0.0002 ETH in wei
-
   // contracts
   const { contract: ethContractInstance } = useContract({
     abi: ethContract.abi,
@@ -52,6 +49,7 @@ export default function Home() {
     functionName: "balance_of",
     args: [GAME_CONTRACT],
     watch: true,
+    refetchInterval: 10,
   });
 
   // Read user points
@@ -65,8 +63,10 @@ export default function Home() {
     functionName: "get_user_points",
     args: [userAddress],
     watch: true,
+    refetchInterval: 10,
   });
 
+  console.log({ prizePool, points });
   // Convert ETH to Wei
   const convertEthToWei = (ethAmount: string): string => {
     try {
@@ -81,19 +81,15 @@ export default function Home() {
   // Place bet
   const play = async () => {
     try {
-      // Approve transaction
-      const approveCall = ethContractInstance.populate("approve", [
-        gameContractInstance.address,
-        APPROVE_AMOUNT,
+      await sendTransferEthTransaction([
+        ethContractInstance.populate("approve", [
+          gameContractInstance.address,
+          0.00002 * 10 ** 18,
+        ]),
+        // half a dollar (0.5 USD) would be approximately 0.0001643485 ETH - converting to wei = 1.643485 * 10 ** 14
+        // should pass this to test on starkscan 164348500000000000
+        gameContractInstance.populate("place_bet", [0.000002 * 10 ** 18]),
       ]);
-
-      // Place bet transaction
-      const placeBetCall = gameContractInstance.populate("place_bet", [
-        BET_AMOUNT,
-      ]);
-
-      // Send transactions
-      await sendTransferEthTransaction([approveCall, placeBetCall]);
 
       // Refetch data
       refectchPrizePool();
