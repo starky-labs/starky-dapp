@@ -1,29 +1,20 @@
-import "dotenv/config";
 import { Contract } from "starknet";
-import { address } from "../../contracts/game.js";
+import { address, abi } from "../../contracts/game.js";
 import { provider, account } from "../utils.js";
 
 async function transferPrize(recipient) {
   console.log("Initiating prize to: ", recipient);
 
-  const { abi } = await provider.getClassAt(address);
-  if (abi === undefined) {
-    throw new Error("no abi.");
-  }
-
-  const gameContract = new Contract(abi, address, provider);
-
-  // Connect the account with contract to allow signing transactions
-  gameContract.connect(account);
-
   try {
+    const contract = new Contract(abi, address, provider);
+    contract.connect(account);
+
     const txResponse = await account.execute({
       contractAddress: address,
       entrypoint: "transfer_prize",
       calldata: [recipient],
     });
 
-    // Wait for transaction confirmation
     const txReceipt = await provider.waitForTransaction(
       txResponse.transaction_hash
     );
@@ -38,13 +29,12 @@ async function transferPrize(recipient) {
 
     return txReceipt;
   } catch (error) {
-    console.error("Error transferring prize:", error);
-    throw new Error("Failed to transfer prize.");
+    throw new Error("Failed to transfer prize.", error.message);
   }
 }
 
 function isWinnerBet() {
-  return Math.random() < 0.5;
+  return Math.random() < 0.2;
 }
 
 export { isWinnerBet, transferPrize };

@@ -55,15 +55,15 @@ async function monitorBetPlacedTransactions() {
     "BetPlaced"
   );
 
-  console.log("All events:", events);
   if (events.length > 0) {
     events.forEach(async (event) => {
       if (isWinnerBet()) {
         const userAddress = event.data[0];
         const transactionHash = event.transaction_hash;
-        console.log("Winner bet found:");
+        console.log("Winner bet found:", transactionHash);
         await transferPrize(userAddress);
       }
+      console.log("Transaction not winner:");
     });
   }
 
