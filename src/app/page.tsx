@@ -65,12 +65,9 @@ export default function Home() {
     watch: true,
     refetchInterval: 10,
   });
-
-  console.log({ prizePool, points });
-  // Convert ETH to Wei
+  
   const convertEthToWei = (ethAmount: string): string => {
     try {
-      // Multiply by 10^18 to convert to wei, round to avoid floating point issues
       return BigInt(Math.round(parseFloat(ethAmount) * 10 ** 18)).toString();
     } catch (error) {
       console.error("Conversion error:", error);
@@ -86,12 +83,11 @@ export default function Home() {
           gameContractInstance.address,
           0.00002 * 10 ** 18,
         ]),
-        // half a dollar (0.5 USD) would be approximately 0.0001643485 ETH - converting to wei = 1.643485 * 10 ** 14
+         // half a dollar (0.5 USD) would be approximately 0.0001643485 ETH - converting to wei = 1.643485 * 10 ** 14
         // should pass this to test on starkscan 164348500000000000
         gameContractInstance.populate("place_bet", [0.000002 * 10 ** 18]),
       ]);
 
-      // Refetch data
       refectchPrizePool();
       refectchPoints();
 
@@ -102,7 +98,6 @@ export default function Home() {
   };
 
   console.log({ prizePool, points });
-  console.log("Connector details:", connector);
 
   const handleModalClose = () => {
     setRemainingApproval(convertEthToWei(approveAmount));
