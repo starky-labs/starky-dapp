@@ -68,6 +68,10 @@
           {
             "name": "user",
             "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "tx_hash",
+            "type": "core::felt252"
           }
         ],
         "outputs": [],
@@ -130,6 +134,11 @@
         "kind": "data",
         "name": "timestamp",
         "type": "core::integer::u64"
+      },
+      {
+        "kind": "data",
+        "name": "tx_hash",
+        "type": "core::felt252"
       }
     ]
   },
