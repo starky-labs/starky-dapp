@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/api/play/route.js", "src/app/network-monitor/state-manager.js", "src/app/network-monitor/index.js", "src/contracts/game.js", "src/contracts/eth.js", "src/app/utils.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/api/play/route.js", "src/app/network-monitor/state-manager.js", "src/app/network-monitor/index.js", "src/contracts/game.js", "src/contracts/eth.js", "src/app/utils.js", "src/app/page.jsx", "src/app/layout.tsx"],
   "exclude": ["node_modules"]
 }

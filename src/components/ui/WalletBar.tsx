@@ -6,7 +6,7 @@ function WalletConnected() {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
 
-  console.log({address});
+  console.log("test: ", { address });
 
   const shortenedAddress = useMemo(() => {
     if (!address) return "";
