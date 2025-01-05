@@ -6,8 +6,6 @@ function WalletConnected() {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
 
-  console.log("test: ", { address });
-
   const shortenedAddress = useMemo(() => {
     if (!address) return "";
     return `${address.slice(0, 6)}...${address.slice(-4)}`;

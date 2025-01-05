@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  useReadContract,
   useAccount,
   useSendTransaction,
   useContract,
@@ -24,20 +23,9 @@ export default function Home() {
   const [prizePoolIsFetching, setPrizePoolIsFetching] = useState(false);
   const [pointsIsFetching, setPointsIsFetching] = useState(false);
 
-  // contracts
-  const { contract: ethContractInstance } = useContract({
-    abi: ethContract.abi,
-    address: ethContract.address,
-  });
-
-  const { contract: gameContractInstance } = useContract({
-    abi: gameContract.abi,
-    address: gameContract.address,
-  });
-
   const { sendAsync: sendTransferEthTransaction } = useSendTransaction({});
 
-  // TODO: Temporary; it should be read from utils, but it's failing. Not sure why.
+  // TODO: Temporary - it should be read from utils, but it's failing. Not sure why.
   const provider = new RpcProvider({
     nodeUrl: process.env.NODE_URL,
     headers: {
@@ -48,13 +36,6 @@ export default function Home() {
   // Read prize pool
   const readPrizePool = async () => {
     try {
-      const { abi: contractAbi } = await provider.getClassAt(
-        gameContract.address
-      );
-      if (!contractAbi) {
-        throw new Error("Contract ABI not found.");
-      }
-
       const contract = new Contract(
         gameContract.abi,
         gameContract.address,
@@ -62,7 +43,6 @@ export default function Home() {
       );
 
       const balance = await contract.get_prize_pool();
-      console.log("test: ", balance);
       setPrizePool(balance);
 
       return balance;
@@ -74,16 +54,8 @@ export default function Home() {
   // Read points
   const readPoints = async () => {
     try {
-      const { abi: contractAbi } = await provider.getClassAt(
-        gameContract.address
-      );
-
-      if (!contractAbi) {
-        throw new Error("Contract ABI not found.");
-      }
-
       const contract = new Contract(
-        contractAbi,
+        gameContract.abi,
         gameContract.address,
         provider
       );
@@ -115,6 +87,16 @@ export default function Home() {
     fetchPrizePool();
   }, [userAddress]);
 
+  const { contract: ethContractInstance } = useContract({
+    abi: ethContract.abi,
+    address: ethContract.address,
+  });
+
+  const { contract: gameContractInstance } = useContract({
+    abi: gameContract.abi,
+    address: gameContract.address,
+  });
+
   // Place bet
   const play = async () => {
     try {
@@ -123,17 +105,16 @@ export default function Home() {
           gameContractInstance.address,
           0.00002 * 10 ** 18,
         ]),
-        // half a dollar (0.5 USD) would be approximately 0.0001643485 ETH - converting to wei = 1.643485 * 10 ** 14
-        // should pass this to test on starkscan 164348500000000000
         gameContractInstance.populate("place_bet", [0.000002 * 10 ** 18]),
       ]);
 
-      console.log(
-        "test - Transaction hash:",
-        transactionResult.transaction_hash
-      );
+      console.log("test: ", {
+        transaction_hash: transactionResult.transaction_hash,
+        userAddress,
+      });
 
       await provider.waitForTransaction(transactionResult.transaction_hash); //TODO:
+
       await readPrizePool();
       await readPoints();
     } catch (error) {
