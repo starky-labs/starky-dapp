@@ -61,7 +61,7 @@ async function monitorBetPlacedTransactions() {
         const userAddress = event.data[0];
         const transactionHash = event.transaction_hash;
         console.log("Winner bet found:", transactionHash);
-        await transferPrize(userAddress);
+        await transferPrize(userAddress, transactionHash);
       }
       console.log("Transaction not winner:");
     });

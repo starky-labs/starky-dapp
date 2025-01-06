@@ -2,7 +2,7 @@ import { Contract } from "starknet";
 import { address, abi } from "../../contracts/game.js";
 import { provider, account } from "../utils.js";
 
-async function transferPrize(recipient) {
+async function transferPrize(recipient, transactionHash) {
   console.log("Initiating prize to: ", recipient);
 
   try {
@@ -12,7 +12,7 @@ async function transferPrize(recipient) {
     const txResponse = await account.execute({
       contractAddress: address,
       entrypoint: "transfer_prize",
-      calldata: [recipient],
+      calldata: [recipient, transactionHash],
     });
 
     const txReceipt = await provider.waitForTransaction(
@@ -34,7 +34,7 @@ async function transferPrize(recipient) {
 }
 
 function isWinnerBet() {
-  return Math.random() < 0.0;
+  return Math.random() < 0.5;
 }
 
 export { isWinnerBet, transferPrize };
