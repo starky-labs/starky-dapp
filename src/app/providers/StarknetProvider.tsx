@@ -6,9 +6,8 @@ import { Connector, StarknetConfig, voyager } from "@starknet-react/core";
 import type { PropsWithChildren } from "react";
 import ControllerConnector from "@cartridge/connector/controller";
 import { RpcProvider } from 'starknet';
-import { ETH_ERC20_CONTRACT, GAME_CONTRACT,  } from "@/app/constants";
-
-const InfuraRPC = `https://starknet-sepolia.infura.io/v3/${process.env.INFURA_API_KEY}`
+import * as gameContract from "@/contracts/game";
+import * as ethContract from "@/contracts/eth";
 
 function provider(chain: Chain) {
   switch (chain) {
@@ -27,12 +26,12 @@ function provider(chain: Chain) {
 const connector = new ControllerConnector({
   policies: [
     {
-      target: ETH_ERC20_CONTRACT,
+      target: ethContract.address,
       method: 'approve',
       description: 'Approve to Starky contract to transfer ETHER on your behalf.',
     },
     {
-      target: GAME_CONTRACT,
+      target: gameContract.address,
       method: 'place_bet',
     },
   ],
