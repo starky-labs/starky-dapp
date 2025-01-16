@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { Contract } from "starknet";
-import { provider, convertWeiToEth} from "@/components/utils";
+import { provider, convertWeiToEth } from "@/components/utils";
 import * as gameContract from "@/contracts/game";
 import * as ethContract from "@/contracts/eth";
 import { useSendTransaction, useContract } from "@starknet-react/core";
@@ -24,7 +24,11 @@ export const useGameLogic = (userAddress) => {
   const readPrizePool = useCallback(async () => {
     try {
       setPrizePoolIsFetching(true);
-      const contract = new Contract(gameContract.abi, gameContract.address, provider);
+      const contract = new Contract(
+        gameContract.abi,
+        gameContract.address,
+        provider
+      );
       const balance = await contract.get_prize_pool();
       setPrizePool(convertWeiToEth(balance));
       setPrizePoolIsFetching(false);
@@ -39,7 +43,11 @@ export const useGameLogic = (userAddress) => {
     if (!userAddress) return;
     try {
       setPointsIsFetching(true);
-      const contract = new Contract(gameContract.abi, gameContract.address, provider);
+      const contract = new Contract(
+        gameContract.abi,
+        gameContract.address,
+        provider
+      );
       const points = await contract.get_user_points(userAddress);
       setPoints(points);
       setPointsIsFetching(false);
@@ -50,28 +58,41 @@ export const useGameLogic = (userAddress) => {
     }
   }, [userAddress]);
 
-  const play = useCallback(async () => {
-    try {
-      const transactionResult = await sendTransferEthTransaction([
-        ethContractInstance.populate("approve", [
-          gameContractInstance.address,
-          0.00002 * 10 ** 18,
-        ]),
-        gameContractInstance.populate("place_bet", [0.000002 * 10 ** 18]),
-      ]);
+  const play = useCallback(
+    async (amountToApprove) => {
+      try {
+        const amountToBet = 0.000002 * 10 ** 18;
+        const maxAmount = amountToApprove * 10 ** 18;
 
-      console.log("Transaction details:", {
-        transaction_hash: transactionResult.transaction_hash,
-        userAddress,
-      });
+        const transactionResult = await sendTransferEthTransaction([
+          ethContractInstance.populate("approve", [
+            gameContractInstance.address,
+            maxAmount,
+          ]),
+          gameContractInstance.populate("place_bet", [amountToBet]),
+        ]);
 
-      await provider.waitForTransaction(transactionResult.transaction_hash);
-      await readPrizePool();
-      await readPoints();
-    } catch (error) {
-      console.error("Error during play:", error);
-    }
-  }, [userAddress, sendTransferEthTransaction, ethContractInstance, gameContractInstance, readPrizePool, readPoints]);
+        console.log("Transaction details:", {
+          transaction_hash: transactionResult.transaction_hash,
+          userAddress,
+        });
+
+        await provider.waitForTransaction(transactionResult.transaction_hash);
+        await readPrizePool();
+        await readPoints();
+      } catch (error) {
+        console.error("Error during play:", error);
+      }
+    },
+    [
+      userAddress,
+      sendTransferEthTransaction,
+      ethContractInstance,
+      gameContractInstance,
+      readPrizePool,
+      readPoints,
+    ]
+  );
 
   return {
     prizePool,
