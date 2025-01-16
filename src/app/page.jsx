@@ -10,7 +10,7 @@ const WalletBar = dynamic(() => import("../components/ui/WalletBar"), {
 
 export default function Home() {
   const { address: userAddress } = useAccount();
-  const { prizePool, points, prizePoolIsFetching, pointsIsFetching, play } =
+  const { prizePool, points, prizePoolIsFetching, pointsAreFetching, play } =
     useGameLogic(userAddress);
 
   return (
@@ -34,7 +34,7 @@ export default function Home() {
                 Prize pool:
                 {`${prizePool || 0} ETH`}
               </div>
-              <div>Points: {pointsIsFetching ? "Loading..." : points}</div>
+              <div>Points: {pointsAreFetching ? "Loading..." : points}</div>
             </>
           )}
         </>

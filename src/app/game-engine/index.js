@@ -29,12 +29,14 @@ async function transferPrize(recipient, transactionHash) {
 
     return txReceipt;
   } catch (error) {
+    console.error("Failed to transfer prize.", error.stack);
+    console.error("Failed to transfer prize.", error.log);
     throw new Error("Failed to transfer prize.", error.message);
   }
 }
 
 function isWinnerBet() {
-  return Math.random() < 0.5;
+  return Math.random() < 0.9;
 }
 
 export { isWinnerBet, transferPrize };

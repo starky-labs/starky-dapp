@@ -1,9 +1,9 @@
 export const address =
-  "0x049D36570D4e46f48e99674bd3fcc84644DdD6b96F7C741B1562B82f9e004dC7" as const;
+  "0x049D36570D4e46f48e99674bd3fcc84644DdD6b96F7C741B1562B82f9e004dC7";
 
 // sepolia
 export const sepolia_classHash =
-  "0x07f3777c99f3700505ea966676aac4a0d692c2a9f5e667f4c606b51ca1dd3420" as const;
+  "0x07f3777c99f3700505ea966676aac4a0d692c2a9f5e667f4c606b51ca1dd3420";
 
 export const abi = [
   {
@@ -257,4 +257,4 @@ export const abi = [
       },
     ],
   },
-] as const;
+];

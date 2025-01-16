@@ -38,7 +38,6 @@ async function checkForEvents(fromBlock, toBlock, eventName) {
 
 async function monitorBetPlacedTransactions() {
   let { lastCheckedBlock } = state;
-
   console.log("Last checked block:", lastCheckedBlock);
 
   const currentBlock = await provider.getBlockNumber();

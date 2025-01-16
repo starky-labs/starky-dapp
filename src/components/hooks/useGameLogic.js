@@ -9,7 +9,7 @@ export const useGameLogic = (userAddress) => {
   const [prizePool, setPrizePool] = useState(null);
   const [points, setPoints] = useState(0);
   const [prizePoolIsFetching, setPrizePoolIsFetching] = useState(false);
-  const [pointsIsFetching, setPointsIsFetching] = useState(false);
+  const [pointsAreFetching, setPointsAreFetching] = useState(false);
 
   const { sendAsync: sendTransferEthTransaction } = useSendTransaction({});
   const { contract: ethContractInstance } = useContract({
@@ -38,14 +38,14 @@ export const useGameLogic = (userAddress) => {
   const readPoints = useCallback(async () => {
     if (!userAddress) return;
     try {
-      setPointsIsFetching(true);
+      setPointsAreFetching(true);
       const contract = new Contract(gameContract.abi, gameContract.address, provider);
       const points = await contract.get_user_points(userAddress);
       setPoints(points);
-      setPointsIsFetching(false);
+      setPointsAreFetching(false);
       return points;
     } catch (error) {
-      setPointsIsFetching(false);
+      setPointsAreFetching(false);
       console.error("Error reading contract points:", error);
     }
   }, [userAddress]);
@@ -60,7 +60,7 @@ export const useGameLogic = (userAddress) => {
         gameContractInstance.populate("place_bet", [0.000002 * 10 ** 18]),
       ]);
 
-      console.log("Transaction details:", {
+      console.log("test - Transaction details:", {
         transaction_hash: transactionResult.transaction_hash,
         userAddress,
       });
@@ -77,7 +77,7 @@ export const useGameLogic = (userAddress) => {
     prizePool,
     points,
     prizePoolIsFetching,
-    pointsIsFetching,
+    pointsAreFetching,
     readPrizePool,
     readPoints,
     play,
