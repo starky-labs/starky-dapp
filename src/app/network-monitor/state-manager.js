@@ -5,7 +5,6 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
 const BLOCK_DATA_FILE = path.join(__dirname, "data.json");
 
 async function loadState({ fallbackLastCheckedBlock = 376908 } = {}) {
@@ -16,7 +15,6 @@ async function loadState({ fallbackLastCheckedBlock = 376908 } = {}) {
       return JSON.parse(data);
     } catch (err) {
       console.error("Error parsing data:", err);
-
       return getDefaultData({ fallbackLastCheckedBlock });
     }
   })

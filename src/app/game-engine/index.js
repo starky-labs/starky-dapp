@@ -9,6 +9,8 @@ async function transferPrize(recipient, transactionHash) {
     const contract = new Contract(abi, address, provider);
     contract.connect(account);
 
+    console.log('test - ZZZZ - transfering: ', {contract, address})
+
     const txResponse = await account.execute({
       contractAddress: address,
       entrypoint: "transfer_prize",
