@@ -3,6 +3,7 @@ import "dotenv/config";
 
 const provider = new RpcProvider({
   nodeUrl: process.env.NODE_URL,
+  chainId: "0x534e5f5345504f4c4941",
   headers: {
     "x-apikey": process.env.API_KEY,
   },

@@ -2,7 +2,8 @@
 
 import { useAccount } from "@starknet-react/core";
 import dynamic from "next/dynamic";
-import { useGameLogic } from "../components/hooks/useGameLogic";
+import { useGameLogic } from "@/components/hooks/useGameLogic";
+import { useTransferPrizeListener } from "@/components/hooks/useTransferPrizeListener";
 
 const WalletBar = dynamic(() => import("../components/ui/WalletBar"), {
   ssr: false,
@@ -12,6 +13,8 @@ export default function Home() {
   const { address: userAddress } = useAccount();
   const { prizePool, points, prizePoolIsFetching, pointsAreFetching, play } =
     useGameLogic(userAddress);
+
+  useTransferPrizeListener();
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
