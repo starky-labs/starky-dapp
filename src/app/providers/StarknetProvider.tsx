@@ -2,26 +2,17 @@
 "use client";
 
 import { sepolia, mainnet, Chain } from "@starknet-react/chains";
-import { Connector, StarknetConfig, voyager } from "@starknet-react/core";
+import { Connector, StarknetConfig, voyager, cartridgeProvider } from "@starknet-react/core";
 import type { PropsWithChildren } from "react";
 import ControllerConnector from "@cartridge/connector/controller";
-import { RpcProvider } from 'starknet';
+import { constants } from 'starknet';
 import * as gameContract from "@/contracts/game";
 import * as ethContract from "@/contracts/eth";
 
-function provider(chain: Chain) {
-  switch (chain) {
-    case mainnet:
-      return new RpcProvider({
-        nodeUrl: 'https://api.cartridge.gg/x/starknet/mainnet',
-      })
-    case sepolia:
-    default:
-      return new RpcProvider({
-        nodeUrl: 'https://api.cartridge.gg/x/starknet/sepolia',
-      })
-  }
-}
+const sepoliaWithRpc = {
+  ...sepolia,
+  rpcUrl: "https://api.cartridge.gg/x/starknet/sepolia"
+};
 
 const connector = new ControllerConnector({
   policies: [
@@ -35,7 +26,8 @@ const connector = new ControllerConnector({
       method: 'place_bet',
     },
   ],
-  rpc: "https://api.cartridge.gg/x/starknet/sepolia",
+  chains: [sepoliaWithRpc],
+  defaultChainId: constants.StarknetChainId.SN_SEPOLIA,
 })
 
 export function StarknetProvider({ children }: PropsWithChildren) {
@@ -45,7 +37,7 @@ export function StarknetProvider({ children }: PropsWithChildren) {
       chains={[mainnet, sepolia]}
       connectors={[connector as never as Connector]}
       explorer={voyager}
-      provider={provider}
+      provider={cartridgeProvider()}
     >
       {children}
     </StarknetConfig>
