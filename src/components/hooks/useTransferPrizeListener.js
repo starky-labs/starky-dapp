@@ -9,11 +9,9 @@ import { address } from "@/contracts/game";
  */
 export function useTransferPrizeListener() {
   const [lastCheckedBlock, setLastCheckedBlock] = useState(null);
-  const [winnerTx, setWinnerTx] = useState([]);
   const isMountedRef = useRef(false);
 
   useEffect(() => {
-    setWinnerTx("");
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
@@ -64,11 +62,6 @@ export function useTransferPrizeListener() {
           events.forEach((ev) => {
             window.alert(`Winner bet found: TxHash = ${ev.transaction_hash}`);
           });
-
-          setWinnerTx((prev) => [
-            ...prev,
-            ...events.map((ev) => ev.transaction_hash),
-          ]);
         }
 
         setLastCheckedBlock(currentBlock);
@@ -81,5 +74,4 @@ export function useTransferPrizeListener() {
     return () => clearInterval(interval);
   }, [lastCheckedBlock]);
 
-  return winnerTx;
 }
