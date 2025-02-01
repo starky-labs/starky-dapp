@@ -9,9 +9,11 @@ import { address } from "@/contracts/game";
  */
 export function useTransferPrizeListener() {
   const [lastCheckedBlock, setLastCheckedBlock] = useState(null);
+  const [winnerTx, setWinnerTx] = useState([]);
   const isMountedRef = useRef(false);
 
   useEffect(() => {
+    setWinnerTx("");
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
@@ -24,7 +26,7 @@ export function useTransferPrizeListener() {
       try {
         const currentBlock = await provider.getBlockNumber();
         if (isMountedRef.current) {
-          setLastCheckedBlock(currentBlock-3);
+          setLastCheckedBlock(currentBlock);
         }
       } catch (err) {
         console.error("Error fetching initial block:", err);
@@ -40,8 +42,6 @@ export function useTransferPrizeListener() {
       return;
     }
 
-    console.log("test - HHHH: ", { lastCheckedBlock });
-
     async function pollEvents() {
       try {
         const currentBlock = await provider.getBlockNumber();
@@ -52,28 +52,23 @@ export function useTransferPrizeListener() {
           return;
         }
 
-        const events = await checkForEvents({
+        const events = await checkForEvents(
           provider,
-          contractAddress: address,
-          eventName: "transfer_prize",
-          fromBlock: lastCheckedBlock,
-          toBlock: currentBlock,
-        });
-
-        console.log(
-          "test - HHHH - 3: ",
-          { events },
-          events.length > 0,
-          isMountedRef.current
+          address,
+          "PrizeTransferred",
+          lastCheckedBlock,
+          currentBlock
         );
 
-        // Temporary - Show an alert for each event
         if (events.length > 0 && isMountedRef.current) {
           events.forEach((ev) => {
-            window.alert(
-              `New transfer_prize event found: TxHash = ${ev.transaction_hash}`
-            );
+            window.alert(`Winner bet found: TxHash = ${ev.transaction_hash}`);
           });
+
+          setWinnerTx((prev) => [
+            ...prev,
+            ...events.map((ev) => ev.transaction_hash),
+          ]);
         }
 
         setLastCheckedBlock(currentBlock);
@@ -86,5 +81,5 @@ export function useTransferPrizeListener() {
     return () => clearInterval(interval);
   }, [lastCheckedBlock]);
 
-  // This hook currently doesn't return anything, it just runs in the background
+  return winnerTx;
 }
