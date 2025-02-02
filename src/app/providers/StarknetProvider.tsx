@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { sepolia, mainnet, Chain } from "@starknet-react/chains";
+import { sepolia, mainnet, } from "@starknet-react/chains";
 import { Connector, StarknetConfig, voyager, cartridgeProvider } from "@starknet-react/core";
 import type { PropsWithChildren } from "react";
 import ControllerConnector from "@cartridge/connector/controller";

@@ -43,7 +43,6 @@ export function useTransferPrizeListener() {
     async function pollEvents() {
       try {
         const currentBlock = await provider.getBlockNumber();
-        console.log("test - HHHH - 1: ", { lastCheckedBlock, currentBlock });
 
         if (lastCheckedBlock >= currentBlock) {
           console.log("No new blocks");
