@@ -8,7 +8,7 @@ interface FloatingNumberProps {
 
 const FloatingNumber = ({ isVisible, x, y }: FloatingNumberProps) => {
   const direction = Math.random() > 0.5 ? 1 : -1;
-  const arcRadius = Math.random() * 200 + 100; // 100-300px radius
+  const arcRadius = Math.random() * 100 + 50; // 100-300px radius
 
   return (
     <AnimatePresence>
@@ -25,19 +25,19 @@ const FloatingNumber = ({ isVisible, x, y }: FloatingNumberProps) => {
             scale: [0.8, 1.2, 1, 1, 0.9, 0.8],
             x: [
               x,
-              x + (direction * arcRadius * 0.2),
-              x + (direction * arcRadius * 0.5),
+              x + (direction * arcRadius * 0.1),
+              x + (direction * arcRadius * 0.25),
+              x + (direction * arcRadius * 0.4),
+              x + (direction * arcRadius * 0.6),
               x + (direction * arcRadius * 0.8),
-              x + (direction * arcRadius),
-              x + (direction * arcRadius * 1.2),
             ],
             y: [
               y,
-              y - 200,
-              y - 180, 
               y - 100,
-              y + 100,
-              y + 300,
+              y - 90, 
+              y - 50,
+              y + 50,
+              y + 150,
             ],
           }}
           transition={{

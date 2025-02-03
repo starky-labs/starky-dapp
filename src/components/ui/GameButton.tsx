@@ -12,6 +12,11 @@ const PlayButton = ({ onClick }: PlayButtonProps) => {
   const [animationPosition, setAnimationPosition] = useState({ x: 0, y: 0 });
 
   const handleClick = (e: React.MouseEvent) => {
+    const clickSound = new Audio("/sounds/water-bleep.wav");
+    clickSound.play().catch((error) => {
+      console.error("Error playing sound:", error);
+    });
+
     // Get click position for animation
     const button = e.currentTarget;
     const container = button.parentElement;

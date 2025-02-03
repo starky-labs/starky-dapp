@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/Button";
 import { Wallet } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 export default function WalletButton() {
   const { address } = useAccount();
@@ -10,7 +10,9 @@ export default function WalletButton() {
   const { disconnect } = useDisconnect();
 
   const shortenedAddress = useMemo(() => {
-    if (!address) return "";
+    if (!address) {
+      return "";
+    }
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   }, [address]);
 
@@ -20,6 +22,13 @@ export default function WalletButton() {
       connect({ connector: cartridgeConnector });
     }
   };
+
+  useEffect(() => {
+    if (address) {
+      const connectSound = new Audio("/sounds/robot-click.wav");
+      connectSound.play();
+    }
+  }, [address]);
 
   return (
     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
