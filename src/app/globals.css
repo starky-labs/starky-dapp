@@ -4,25 +4,20 @@
 
 @layer base {
   :root {
-    /* Pure black background with high contrast foreground */
     --background: 0 0% 0%;
     --foreground: 0 0% 100%;
 
-    /* Card and popover styling with deeper blacks */
     --card: 0 0% 3%;
     --card-foreground: 0 0% 100%;
     --popover: 0 0% 3%;
     --popover-foreground: 0 0% 100%;
 
-    /* Hot pink primary color */
     --primary: 328 100% 54%;
     --primary-foreground: 0 0% 100%;
 
-    /* Dark mode optimized secondary colors */
     --secondary: 0 0% 9%;
     --secondary-foreground: 0 0% 100%;
 
-    /* Muted elements with better contrast */
     --muted: 0 0% 9%;
     --muted-foreground: 0 0% 63.9%;
 
@@ -34,12 +29,10 @@
     --destructive: 0 100% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Border and input styling */
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
     --ring: 328 100% 54%;
 
-    /* Border radius */
     --radius: 0.75rem;
   }
 }
@@ -108,9 +101,3 @@
     animation: gradient 3s linear infinite;
   }
 }
-
-/* body {
-  color: hsl(var(--foreground));
-  background: hsl(var(--background));
-  font-family: Arial, Helvetica, sans-serif;
-} */
