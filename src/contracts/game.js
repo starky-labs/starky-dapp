@@ -1,5 +1,5 @@
 export const address =
-  "0x2777621f26b83e637b176467f0e0054700b4530a0aad338d42c582d1977b491";
+  "0x05efa394777db4dd60391ad025ecbc98c4024d864f5da27e3e9e6500dd416360";
 
 export const abi = [
   {
@@ -79,6 +79,28 @@ export const abi = [
         ],
         "outputs": [],
         "state_mutability": "external"
+      },
+      {
+        "name": "currency",
+        "type": "function",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "name": "fee_collector_address",
+        "type": "function",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view"
       }
     ]
   },
@@ -92,6 +114,10 @@ export const abi = [
       },
       {
         "name": "currency",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "fee_collector_address",
         "type": "core::starknet::contract_address::ContractAddress"
       }
     ]
@@ -114,6 +140,11 @@ export const abi = [
       {
         "kind": "data",
         "name": "points_earned",
+        "type": "core::integer::u256"
+      },
+      {
+        "kind": "data",
+        "name": "fee_amount",
         "type": "core::integer::u256"
       }
     ]
@@ -146,6 +177,23 @@ export const abi = [
     ]
   },
   {
+    "kind": "struct",
+    "name": "betting_game::betting_game::BettingContract::PlatformFeeCollected",
+    "type": "event",
+    "members": [
+      {
+        "kind": "data",
+        "name": "fee_collector",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "kind": "data",
+        "name": "amount",
+        "type": "core::integer::u256"
+      }
+    ]
+  },
+  {
     "kind": "enum",
     "name": "betting_game::betting_game::BettingContract::Event",
     "type": "event",
@@ -159,6 +207,11 @@ export const abi = [
         "kind": "nested",
         "name": "PrizeTransferred",
         "type": "betting_game::betting_game::BettingContract::PrizeTransferred"
+      },
+      {
+        "kind": "nested",
+        "name": "PlatformFeeCollected",
+        "type": "betting_game::betting_game::BettingContract::PlatformFeeCollected"
       }
     ]
   }

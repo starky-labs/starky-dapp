@@ -26,12 +26,12 @@ async function transferPrize(recipient, transactionHash) {
       resourceBounds: {
         l1_gas: {
           max_amount: "0x7D0", // 2000 in decimal
-          max_price_per_unit: "0xFFFFFFFFFFFF" // ~281,474,976,710,655 decimal
+          max_price_per_unit: "0xFFFFFFFFFFFF", // ~281,474,976,710,655 decimal
         },
         l2_gas: {
           max_amount: "0x0",
-          max_price_per_unit: "0x0"
-        }
+          max_price_per_unit: "0x0",
+        },
       },
     });
 
@@ -56,7 +56,7 @@ async function transferPrize(recipient, transactionHash) {
 }
 
 function isWinnerBet() {
-  return Math.random() < 0.9;
+  return Math.random() < 0.01;
 }
 
 export { isWinnerBet, transferPrize };
