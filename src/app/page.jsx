@@ -1,48 +1,57 @@
 "use client";
 
 import { useAccount } from "@starknet-react/core";
-import dynamic from "next/dynamic";
 import { useGameLogic } from "@/components/hooks/useGameLogic";
-import { useTransferPrizeListener } from "@/components/hooks/useTransferPrizeListener";
-
-const WalletBar = dynamic(() => import("../components/ui/WalletBar"), {
-  ssr: false,
-});
+import PrizeAnimation from "@/components/ui/PrizeAnimation";
+import WalletButton from "@/components/ui/WalletButton";
+import PlayButton from "@/components/ui/PlayButton";
 
 export default function Home() {
   const { address: userAddress } = useAccount();
-  const { prizePool, points, prizePoolIsFetching, pointsAreFetching, play } =
+  const { prizePool, points, play } =
     useGameLogic(userAddress);
 
-   useTransferPrizeListener();
-
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <div className="flex flex-row mb-4">
-        <WalletBar />
-      </div>
-      {userAddress ? (
-        <>
-          <button
-            onClick={play}
-            className="border-2 border-blue-500 bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 active:bg-blue-700 transition-all"
-          >
-            Play
-          </button>
-          {prizePoolIsFetching ? (
-            "Loading..."
-          ) : (
-            <>
-              <div>
-                Prize pool:
-                {`${prizePool || 0} ETH`}
+    <div className="min-h-screen bg-background flex flex-col">
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/50">
+            STARKY
+          </h1>
+          <WalletButton />
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 flex-1 flex flex-col items-center justify-center">
+        {userAddress ? (
+          <>
+            <div className="mb-12 text-center">
+              <div className="relative inline-block">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-primary/50 rounded-lg blur opacity-30"></div>
+                <PrizeAnimation />
+                <div className="relative px-8 py-4 bg-background border rounded-lg">
+                  <div className="text-sm text-muted-foreground mb-1">
+                    Prize Pool
+                  </div>
+                  <div className="text-sm font-bold">${prizePool} ETH</div>
+                </div>
               </div>
-              <div>Points: {pointsAreFetching ? "Loading..." : points}</div>
-            </>
-          )}
-        </>
-      ) : (
-        <div>Please select a wallet and connect</div>
+            </div>
+            <PlayButton onClick={play} />
+          </>
+        ) : (
+          <div className="mb-12 text-center">
+            <div className="text-sm text-muted-foreground mb-1">
+              Please connect wallet
+            </div>
+          </div>
+        )}
+      </main>
+      {userAddress && (
+        <div className="fixed bottom-4 left-4">
+          <div className="text-sm text-muted-foreground">Points</div>
+          <div className="text-xl font-semibold">{points}</div>
+        </div>
       )}
     </div>
   );

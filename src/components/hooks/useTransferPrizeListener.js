@@ -5,10 +5,13 @@ import { provider } from "@/components/utils";
 import { address } from "@/contracts/game";
 
 /**
- * Basic hook that listens for "transfer_prize" events.
+ * Hook that listens for "PrizeTransferred" events and returns an object with:
+ * - txHashes: an array of transaction hashes.
+ * - clearTxHashes: a function to clear the array.
  */
 export function useTransferPrizeListener() {
   const [lastCheckedBlock, setLastCheckedBlock] = useState(null);
+  const [txHashes, setTxHashes] = useState([]);
   const isMountedRef = useRef(false);
 
   useEffect(() => {
@@ -18,7 +21,7 @@ export function useTransferPrizeListener() {
     };
   }, []);
 
-  // On mount, immediately set lastCheckedBlock to the current block
+  // On mount, initialize the last checked block to the current block number
   useEffect(() => {
     async function initLastBlock() {
       try {
@@ -34,7 +37,7 @@ export function useTransferPrizeListener() {
     initLastBlock();
   }, []);
 
-  // Poll every 3s for new events, starting from lastCheckedBlock
+  // Poll for new events every 3 seconds
   useEffect(() => {
     if (lastCheckedBlock === null) {
       return;
@@ -58,9 +61,8 @@ export function useTransferPrizeListener() {
         );
 
         if (events.length > 0 && isMountedRef.current) {
-          events.forEach((ev) => {
-            window.alert(`Winner bet found: TxHash = ${ev.transaction_hash}`);
-          });
+          const newTxHashes = events.map((ev) => ev.transaction_hash);
+          setTxHashes((prev) => [...prev, ...newTxHashes]);
         }
 
         setLastCheckedBlock(currentBlock);
@@ -73,4 +75,8 @@ export function useTransferPrizeListener() {
     return () => clearInterval(interval);
   }, [lastCheckedBlock]);
 
+  // Function to clear the txHashes
+  const clearTxHashes = () => setTxHashes([]);
+
+  return { txHashes, clearTxHashes };
 }
