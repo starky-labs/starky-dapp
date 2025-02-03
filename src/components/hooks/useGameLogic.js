@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Contract } from "starknet";
 import { provider, convertWeiToEth} from "@/components/utils";
 import * as gameContract from "@/contracts/game";
@@ -49,6 +49,14 @@ export const useGameLogic = (userAddress) => {
       console.error("Error reading contract points:", error);
     }
   }, [userAddress]);
+
+  // On first load, update points and prize with values stored in the contract
+  useEffect(() => {
+    (async () => {
+      await readPrizePool();
+      await readPoints();
+    })();
+  }, [readPrizePool, readPoints]);
 
   const play = useCallback(async () => {
     try {

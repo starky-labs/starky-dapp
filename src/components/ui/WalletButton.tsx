@@ -39,7 +39,7 @@ export default function WalletButton() {
           </span>
           <Button variant="outline" onClick={() => disconnect()}>
             <Wallet className="mr-2 h-4 w-4" />
-            Disconnect
+            Connected
           </Button>
         </div>
       ) : (

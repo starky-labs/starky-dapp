@@ -1,27 +1,68 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
-import { Sparkles } from "lucide-react";
+import FloatingNumber from "./FloatingNumber";
 
 interface PlayButtonProps {
   onClick: () => void;
 }
 
-export default function PlayButton({ onClick }: PlayButtonProps) {
+const PlayButton = ({ onClick }: PlayButtonProps) => {
+  const [showNumber, setShowNumber] = useState(false);
+  const [animationPosition, setAnimationPosition] = useState({ x: 0, y: 0 });
+
+  const handleClick = (e: React.MouseEvent) => {
+    const clickSound = new Audio("/sounds/water-bleep.wav");
+    clickSound.play().catch((error) => {
+      console.error("Error playing sound:", error);
+    });
+
+    // Get click position for animation
+    const button = e.currentTarget;
+    const container = button.parentElement;
+    if (!container) {
+      return;
+    }
+
+    // Get bounding rectangles
+    const buttonRect = button.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+
+    // Calculate position relative to the container
+    const x = buttonRect.left - containerRect.left + buttonRect.width / 2;
+    const y = buttonRect.top - containerRect.top + buttonRect.height / 2;
+
+    // Set animation starting position
+    setAnimationPosition({ x, y });
+
+    // Restart the animation
+    setShowNumber(false);
+    requestAnimationFrame(() => setShowNumber(true));
+
+    // Hide animation after completion
+    setTimeout(() => setShowNumber(false), 3000);
+    onClick();
+  };
+
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       className="relative"
     >
-      <div className="absolute -inset-1 bg-gradient-to-r from-primary to-primary/50 rounded-lg blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
+      <FloatingNumber
+        isVisible={showNumber}
+        x={animationPosition.x}
+        y={animationPosition.y}
+      />
       <Button
-        size="lg"
-        onClick={onClick}
-        className="relative px-8 py-6 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+        onClick={handleClick}
+        className="px-8 py-4 bg-primary hover:bg-primary/90 rounded-full"
       >
-        <Sparkles className="mr-2 h-5 w-5" />
         Play
       </Button>
     </motion.div>
   );
-}
+};
+
+export default PlayButton;

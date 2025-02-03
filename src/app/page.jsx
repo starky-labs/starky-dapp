@@ -2,16 +2,14 @@
 
 import { useAccount } from "@starknet-react/core";
 import { useGameLogic } from "@/components/hooks/useGameLogic";
-import { useTransferPrizeListener } from "@/components/hooks/useTransferPrizeListener";
+import PrizeAnimation from "@/components/ui/PrizeAnimation";
 import WalletButton from "@/components/ui/WalletButton";
-import GameButton from "@/components/ui/GameButton";
+import PlayButton from "@/components/ui/PlayButton";
 
 export default function Home() {
   const { address: userAddress } = useAccount();
-  const { prizePool, points, prizePoolIsFetching, pointsAreFetching, play } =
+  const { prizePool, points, play } =
     useGameLogic(userAddress);
-
-  useTransferPrizeListener();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -30,19 +28,16 @@ export default function Home() {
             <div className="mb-12 text-center">
               <div className="relative inline-block">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-primary/50 rounded-lg blur opacity-30"></div>
+                <PrizeAnimation />
                 <div className="relative px-8 py-4 bg-background border rounded-lg">
                   <div className="text-sm text-muted-foreground mb-1">
                     Prize Pool
                   </div>
-                  <div className="text-sm font-bold">
-                    {prizePoolIsFetching
-                      ? "Loading..."
-                      : `${prizePool ?? 0} ETH`}
-                  </div>
+                  <div className="text-sm font-bold">${prizePool} ETH</div>
                 </div>
               </div>
             </div>
-            <GameButton onClick={play} />
+            <PlayButton onClick={play} />
           </>
         ) : (
           <div className="mb-12 text-center">
@@ -52,12 +47,12 @@ export default function Home() {
           </div>
         )}
       </main>
-      <div className="fixed bottom-4 left-4">
-        <div className="text-sm text-muted-foreground">Points</div>
-        <div className="text-xl font-semibold">
-          {pointsAreFetching ? "Loading..." : points}
+      {userAddress && (
+        <div className="fixed bottom-4 left-4">
+          <div className="text-sm text-muted-foreground">Points</div>
+          <div className="text-xl font-semibold">{points}</div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
