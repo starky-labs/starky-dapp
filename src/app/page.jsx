@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useAccount } from "@starknet-react/core";
@@ -19,12 +19,24 @@ const MotionNumber = dynamic(
 export default function Home() {
   const { address: userAddress } = useAccount();
   const { prizePool, points, play } = useGameLogic(userAddress);
-
+  const [userPoints, setUserPoints] = useState(Number(points));
+  const [hasInteracted, setHasInteracted] = useState(false);
   const prevPointsRef = useRef(points);
 
+  // Set a flag when the user interacts (click) with the page
   useEffect(() => {
-    // Only play sound if points have changed (and not on first load)
+    const handleUserInteraction = () => {
+      setHasInteracted(true);
+      window.removeEventListener("click", handleUserInteraction);
+    };
+    window.addEventListener("click", handleUserInteraction);
+    return () => window.removeEventListener("click", handleUserInteraction);
+  }, []);
+
+  // Play sound on points change, only if the user has interacted with the document
+  useEffect(() => {
     if (
+      hasInteracted &&
       prevPointsRef.current !== undefined &&
       prevPointsRef.current !== points
     ) {
@@ -33,9 +45,16 @@ export default function Home() {
         .play()
         .catch((err) => console.error("Error playing points sound:", err));
     }
-    // Update previous points for the next render
     prevPointsRef.current = points;
+  }, [points, hasInteracted]);
+
+  useEffect(() => {
+    if (points) {
+      setUserPoints(Number(points));
+    }
   }, [points]);
+
+  console.log("test: ", { points: userPoints });
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -59,7 +78,7 @@ export default function Home() {
                   <div className="text-sm text-muted-foreground mb-1">
                     Prize Pool
                   </div>
-                  <div className="text-sm font-bold">${prizePool} ETH</div>
+                  <div className="text-sm font-bold">{prizePool} Gwei</div>
                 </div>
               </div>
             </div>
@@ -85,9 +104,10 @@ export default function Home() {
             />
             <p className="text-lg font-bold mr-1">Points:</p>
             <MotionNumber
+              key={userPoints}
               className="font-bold text-lg"
-              value={points}
-              format={{ notation: "standard" }}
+              value={userPoints}
+              format={(value) => String(Math.round(value))}
               locales="en-US"
               transition={{
                 layout: { type: "spring", duration: 0.7, bounce: 0 },
