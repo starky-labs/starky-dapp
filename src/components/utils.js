@@ -9,8 +9,8 @@ import "dotenv/config";
   },
 }); */
 
-const provider = new RpcProvider({ nodeUrl: process.env.NEXT_PUBLIC_NODE_URL_NEW });
+const provider = new RpcProvider({ nodeUrl: process.env.NEXT_PUBLIC_NODE_URL_INFURA });
 
-const convertWeiToEth = (wei) => (wei ? Number(wei) / 10 ** 18 : null);
+const convertWeiToGwei = (wei) => (wei ? Number(wei) / 10 ** 9 : null);
 
-export { provider, convertWeiToEth };
+export { provider, convertWeiToGwei };

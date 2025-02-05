@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { Contract } from "starknet";
-import { provider, convertWeiToEth} from "@/components/utils";
+import { provider, convertWeiToGwei} from "@/components/utils";
 import * as gameContract from "@/contracts/game";
 import * as ethContract from "@/contracts/eth";
 import { useSendTransaction, useContract } from "@starknet-react/core";
@@ -26,7 +26,7 @@ export const useGameLogic = (userAddress) => {
       setPrizePoolIsFetching(true);
       const contract = new Contract(gameContract.abi, gameContract.address, provider);
       const balance = await contract.get_prize_pool();
-      setPrizePool(convertWeiToEth(balance));
+      setPrizePool(convertWeiToGwei(balance));
       setPrizePoolIsFetching(false);
       return balance;
     } catch (error) {

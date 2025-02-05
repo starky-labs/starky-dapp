@@ -56,7 +56,7 @@ async function transferPrize(recipient, transactionHash) {
 }
 
 function isWinnerBet() {
-  return Math.random() < 0.01;
+  return Math.random() < 0.2;
 }
 
 export { isWinnerBet, transferPrize };

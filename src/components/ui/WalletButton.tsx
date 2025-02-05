@@ -37,7 +37,7 @@ export default function WalletButton() {
           <span className="text-xs text-muted-foreground hidden sm:inline">
             {shortenedAddress}
           </span>
-          <Button variant="outline" onClick={() => disconnect()}>
+          <Button className="flex flex-row items-center justify-items-start p-2 rounded min-w-40 border-2 border-primary" variant="outline" onClick={() => disconnect()}>
             <Wallet className="mr-2 h-4 w-4" />
             Connected
           </Button>

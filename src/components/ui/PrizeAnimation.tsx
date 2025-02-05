@@ -18,7 +18,7 @@ const PrizeAnimation = () => {
   }, [txHashes, clearTxHashes]);
 
   return (
-    <div className="fixed top-0 left-0 z-50">
+    <div className="fixed top-0 left-0 z-50 w-full pointer-events-none">
       <AnimatePresence>
         {displayedTxs.map((tx) => (
           <motion.div
@@ -27,7 +27,7 @@ const PrizeAnimation = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
-            className="p-4 m-2 bg-green-500 text-white rounded"
+            className="mx-auto my-2 p-2 md:p-4 bg-gray-800 text-primary rounded shadow-md w-11/12 max-w-md"
           >
             Prize transferred! TxHash: {tx}
           </motion.div>

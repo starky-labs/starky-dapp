@@ -9,7 +9,7 @@ import "dotenv/config";
   },
 }); */
 
-const provider = new RpcProvider({ nodeUrl: process.env.NODE_ENV_NEW });
+const provider = new RpcProvider({ nodeUrl: process.env.NODE_URL_INFURA });
 
 const account = new Account(
   provider,
